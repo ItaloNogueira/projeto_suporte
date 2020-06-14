@@ -8,6 +8,7 @@ class ChamadoControlador {
     // Rotas relacionadas aos chamados
     static routes() {
         return {
+            autenticados: '/chamados*',
             lista: '/chamados',
             cadastra: '/chamados/form',
             seleciona: '/chamados/form/:id',
@@ -18,8 +19,10 @@ class ChamadoControlador {
     index() {
         return function (require, response) {
             const chamadoDao = new ChamadoDao(db);
+            const idUsuario = require.session.passport.user.id;
+            console.log(idUsuario)
 
-            chamadoDao.index()
+            chamadoDao.index(idUsuario)
                 .then(chamados => response.status(200).json({ chamados: chamados }))
                 .catch(error => response.status(400));
         };
@@ -40,7 +43,7 @@ class ChamadoControlador {
         return function (require, response) {
             const errors = validationResult(require);
             const chamadoDao = new ChamadoDao(db);
-            console.log(require.body)
+            const idUsuario = require.session.passport.user.id;
 
             if (!errors.isEmpty()) {
                 return response.status(400).json(
@@ -57,7 +60,7 @@ class ChamadoControlador {
             };
 
             chamadoDao.create(require.body)
-                .then(results => response.status(200).json(results))
+                .then(results => response.status(201).json(results))
                 .catch(error => response.status(400));
         };
     };

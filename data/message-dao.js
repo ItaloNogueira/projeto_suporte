@@ -5,17 +5,21 @@ class MessageDao {
     };
 
     // lista as mensagens relacionadas ao determinado chamado
-    index(idChamado) {
+    index(idChamado, idUsuario) {
         return new Promise((resolve, reject) => {
             this._db.query(`
                 SELECT 
                     mensagem.mensagem as mensagem, 
+                    usuarios.nome as nome, 
                     chamados.titulo as titulo,
                     chamadoIdchamado as idChamado
                 FROM mensagem 
-                LEFT JOIN chamados
+                left join chamados
                 ON chamados.idChamados = mensagem.chamadoIdchamado
-                WHERE chamados.idChamados = ${idChamado};`
+                LEFT JOIN usuarios
+                ON mensagem.chamadoIdUsuario = usuarios.idUsuarios 
+                WHERE chamados.idChamados = ${idChamado} 
+                AND usuarios.idUsuarios = ${idUsuario};`
                 , (error, results) => {
                     if (error) return reject(error);
 
@@ -37,18 +41,21 @@ class MessageDao {
         });
     };
 
-    create(idChamado, mensagem){
+    create(idChamado, mensagem, idUsuario) {
 
         return new Promise((resolve, reject) => {
             this._db.query(`
                 INSERT INTO Mensagem(
                     mensagem,
-                    chamadoIdchamado    
+                    chamadoIdUsuario,
+                    chamadoIdchamado
+                    
                 )VALUES(
+                    ?,
                     ?,
                     ?
                 );`
-                , [mensagem.mensagem, idChamado]
+                , [mensagem.mensagem, idUsuario, idChamado]
                 , (error) => {
                     if (error) return reject(error);
 

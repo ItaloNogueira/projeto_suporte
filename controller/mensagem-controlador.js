@@ -4,7 +4,7 @@ const { validationResult } = require('express-validator');
 
 class MensagemControlador {
 
-    static rotas() {
+    static routes() {
         return {
             autenticados: "/mensagem*",
             lista: "/mensagem/:id",
@@ -16,8 +16,9 @@ class MensagemControlador {
         return function (require, response) {
             const idChamado = require.params.id;
             const mensagemDao = new MensagemDao(db);
+            const idUsuario = require.sessio.passport.user.id;
 
-            mensagemDao.index(idChamado)
+            mensagemDao.index(idChamado, idUsuario)
                 .then(results => response.json(results))
                 .catch(error => console.log(error));
         };
@@ -28,6 +29,7 @@ class MensagemControlador {
             const errors = validationResult(require);
             const idChamado = require.params.id;
             const mensagemDao = new MensagemDao(db);
+            const idUsuario = require.session.passport.user.id;
 
             if (!errors.isEmpty()) {
                 return response.json(
@@ -43,7 +45,7 @@ class MensagemControlador {
                 );
             };
 
-            mensagemDao.create(idChamado, require.body)
+            mensagemDao.create(idChamado, require.body, idUsuario)
                 .then(result => response.status(200).json(result))
                 .catch(error => response.status(400));
         };

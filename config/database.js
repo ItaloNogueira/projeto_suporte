@@ -19,7 +19,7 @@ db.connect((error) => {
                 unidade VARCHAR(50),
                 email VARCHAR(255),
                 senha VARCHAR(50),
-                PRIMARY KEY(idUsuarios)
+            PRIMARY KEY(idUsuarios)
             );`;
         db.query(mysql, (error) => {
             if (error) throw error;
@@ -33,7 +33,9 @@ db.connect((error) => {
             titulo VARCHAR(50),
             data_Chamado DATETIME,
             estado VARCHAR(1) DEFAULT'A',
-            PRIMARY KEY(idChamados)
+        PRIMARY KEY(idChamados),
+            idUsuarios SMALLINT,
+        CONSTRAINT fk_idUsuarios FOREIGN KEY(idUsuarios) REFERENCES Usuarios(idUsuarios)
         );`;
         db.query(mysql, (error) => {
             if (error) throw error;
@@ -46,9 +48,11 @@ db.connect((error) => {
             mensagem VARCHAR(100),
             dataMensagem DATE,
             hora TIME,
+            chamadoIdUsuario SMALLINT(10),
             chamadoIdchamado SMALLINT(10),
+        CONSTRAINT fk_chamadoIdUsuario FOREIGN KEY(chamadoIdUsuario) REFERENCES chamados(idUsuarios),
         CONSTRAINT fk_chamadoIdchamado FOREIGN KEY(chamadoIdchamado) REFERENCES chamados(idChamados)
-    );`;
+        );`;
         db.query(mysql, (err) => {
             if (err) throw err;
         });

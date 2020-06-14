@@ -5,14 +5,15 @@ class ChamadoDao {
     };
 
     // Retorna a lista de chamados do banco
-    index() {
+    index(idUsuario) {
         return new Promise((resolve, reject) => {
             this._db.query(`
                 SELECT 
                     idChamados, 
                     descricao, 
                     titulo 
-                FROM Chamados;`
+                FROM Chamados 
+                WHERE idUsuarios = ${idUsuario};`
                 , (error, results) => {
                     if (error) return reject(error);
 
@@ -43,18 +44,20 @@ class ChamadoDao {
     };
 
     // Adiciona um chamado no banco
-    create(chamado) {
+    create(chamado, idUsuario) {
 
         return new Promise((resolve, reject) => {
             this._db.query(`
                 INSERT INTO Chamados(
                     titulo,
-                    descricao
+                    descricao,
+                    idUsuarios
                 ) VALUES (
+                    ?, 
                     ?,
                     ?
                 );`
-                , [chamado.titulo, chamado.descricao]
+                , [chamado.titulo, chamado.descricao, idUsuario]
                 , (error) => {
                     if (error) return reject(error);
 

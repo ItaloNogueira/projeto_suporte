@@ -3,7 +3,15 @@ const mensagemControlador = new MensagemControlador();
 const Mensagem = require('../model/mensagem');
 
 module.exports = (app) => {
-    const mensagemRotas = MensagemControlador.rotas();
+    const mensagemRotas = MensagemControlador.routes();
+
+    app.use(mensagemRotas.autenticados, function (require, response, next) {
+        if (require.isAuthenticated()) {
+            next();
+        } else {
+            response.send('Usuario não logado');
+        };
+    });
 
     app.route(mensagemRotas.lista)
         .get(mensagemControlador.index());
